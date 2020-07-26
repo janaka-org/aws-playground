@@ -1,5 +1,5 @@
-# aws-app-mesh-example
+# AWS Playground
 
-Playing with AWS App Mesh
+Playing with AWS
 
-See [backlog](https://github.com/janaka-org/aws-app-mesh-example/projects/1) for learning roadmap
+See [learning backlog here](https://github.com/janaka-org/aws-playground/projects/1)
