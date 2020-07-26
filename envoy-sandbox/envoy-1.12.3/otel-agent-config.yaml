@@ -1,0 +1,70 @@
+receivers:
+  otlp:
+    endpoint: 0.0.0.0:9090
+    max_recv_msg_size_mib: 32
+    max_concurrent_streams: 1
+    keepalive:
+      server_parameters:
+        max_connection_idle: 11s
+        max_connection_age: 12s
+        max_connection_age_grace: 13s
+        time: 30s
+        timeout: 5s
+      enforcement_policy:
+        min_time: 10s
+        permit_without_stream: true
+
+  # opencensus:
+  #   endpoint: 0.0.0.0:55678
+  zipkin:
+    endpoint: :9411
+  # jaeger:
+  #   protocols:
+  #     thrift_http:
+  #       endpoint: "0.0.0.0:14268"
+
+  # # Collects metrics from the host operating system. This is applicable when the OpenTelemetry Collector is running as an agent.
+  # vmmetrics:
+  #   scrape_interval: 10s
+  #   metric_prefix: "testmetric"
+  #   mount_point: "/proc"
+  #   process_mount_point: "/data/proc" # Only using when running as an agent / daemonset
+
+
+exporters:
+  otlp:
+    endpoint: "otel-collector:9090"
+    insecure: true
+    # num_workers: 2
+    # keepalive:
+    #   time: 20s
+    #   timeout: 30s
+    #   permit_without_stream: true
+
+  # opencensus:
+  #   endpoint: "otel-collector:55678"
+  #   insecure: true
+  logging:
+    loglevel: debug
+
+processors:
+  batch:
+  queued_retry:
+
+extensions:
+  pprof:
+    endpoint: :1777
+  zpages:
+    endpoint: :55679
+  health_check:
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    traces:
+      receivers: [zipkin, otlp]
+      exporters: [logging, otlp]
+      processors: [batch, queued_retry]
+    # metrics:
+    #   receivers: [opencensus]
+    #   exporters: [logging,opencensus]

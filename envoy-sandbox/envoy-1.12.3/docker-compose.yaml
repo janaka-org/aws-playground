@@ -1,0 +1,87 @@
+version: "3.7"
+services:
+
+  front-envoy:
+    build:
+      context: ./
+      dockerfile: dockerfile-frontenvoy
+    volumes:
+      - ./front-envoy-zipkin.yaml:/etc/front-envoy.yaml
+    networks:
+      - envoymesh
+    expose:
+      - "80"
+      - "8001"
+    ports:
+      - "8000:80"
+      - "8001:8001"
+    depends_on: 
+      - otel-agent
+
+  service1:
+    build:
+      context: ./
+      dockerfile: dockerfile-service
+    volumes:
+      - ./service1-envoy-zipkin.yaml:/etc/service-envoy.yaml
+    networks:
+      envoymesh:
+        aliases:
+          - service1
+    environment:
+      - SERVICE_NAME=1
+    expose:
+      - "80"
+    depends_on: 
+      - otel-agent      
+
+  service2:
+    build:
+      context: ./
+      dockerfile: dockerfile-service
+    volumes:
+      - ./service2-envoy-zipkin.yaml:/etc/service-envoy.yaml
+    networks:
+      envoymesh:
+        aliases:
+          - service2
+    environment:
+      - SERVICE_NAME=2
+    expose:
+      - "80"
+    depends_on: 
+      - otel-agent
+
+  otel-agent:
+    build:
+      context: ../../otel-collector/agent-core
+      dockerfile: dockerfile
+    volumes:
+     - ./otel-agent-config.yaml:/etc/otel-agent-config.yaml
+    networks:
+      envoymesh:
+        aliases:
+          - otel-agent
+    ports:
+      - "1777:1777"   # pprof extension
+      - "8887:8888"   # Prometheus metrics exposed by the agent
+      - "14268"       # Jaeger receiver
+      - "9411:9411"   # zipkin receiver
+      - "55678"       # OpenCensus receiver
+      - "55679:55679" # zpages extension
+      - "13133"       # health_check
+      - "9090:9090"   # otlp (OTel protocol reveiver)
+
+  # zipkin:
+  #   image: openzipkin/zipkin
+  #   networks:
+  #     envoymesh:
+  #       aliases:
+  #         - zipkin
+  #   expose:
+  #     - "9411"
+  #   ports:
+  #     - "9411:9411"
+
+networks:
+  envoymesh: {}

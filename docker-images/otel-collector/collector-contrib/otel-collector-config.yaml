@@ -1,0 +1,74 @@
+receivers:
+  otlp: 
+    endpoint: 0.0.0.0:9090 #default address
+    max_recv_msg_size_mib: 32
+    max_concurrent_streams: 1
+    keepalive:
+      server_parameters:
+        max_connection_idle: 11s
+        max_connection_age: 12s
+        max_connection_age_grace: 13s
+        time: 30s
+        timeout: 5s
+      enforcement_policy:
+        min_time: 10s
+        permit_without_stream: true
+         
+
+exporters:
+  logging:
+    loglevel: debug
+
+  # zipkin:
+  #   url: "http://zipkin-all-in-one:9411/api/v2/spans" # compose name resolves to the container port
+  #   format: proto
+
+  honeycomb:
+    api_key: "99b340d1b162e097d08ef7928d0e5ad5"
+    dataset: "aws-app-mesh-example"
+
+  # ref https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/master/exporter/awsxrayexporter
+  # awsxray:
+  #   local_mode: true # Local mode to skip EC2 instance metadata check.
+  #   region: "us-west-2"
+  #   resource_arn: # Amazon Resource Name (ARN) of the AWS resource running the collector.
+  #   role_arn:  # IAM role to upload segments to a different account.
+
+  # jaeger:
+  #   endpoint: jaeger-all-in-one:14250
+
+# Alternatively, use jaeger_thrift_http with the settings below. In this case
+# update the list of exporters on the traces pipeline.
+#
+#  jaeger_thrift_http:
+#    url: http://jaeger-all-in-one:14268/api/traces
+
+processors:
+  batch:
+  queued_retry:
+  memory_limiter:
+    ballast_size_mib: 2000
+    check_interval: 5s
+    limit_mib: 4000
+    spike_limit_mib: 500
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+
+service:
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [logging, honeycomb]
+      processors: [batch, queued_retry]
+
+# prometheus:
+#   endpoint: "0.0.0.0:8889"
+#   namespace: promexample
+#   const_labels:
+#     label1: value1

@@ -1,0 +1,17 @@
+FROM otel/opentelemetry-collector-dev:latest
+# bake an image with our config file becasue it's a pain to pass in at runtime with AWS Fargate
+COPY ./otel-agent-config.yaml /etc/otel-agent-config.yaml
+
+# ENTRYPOINT exec name and EXPOSE ports copied from base image dockerfile
+# https://github.com/open-telemetry/opentelemetry-collector/blob/master/cmd/otelcol/Dockerfile
+ENTRYPOINT ["/otelcol", "--config=/etc/otel-agent-config.yaml"]
+
+# 9090  - otlp default port
+# 1777  - pprof extension
+# 8888  - Prometheus metrics exposed by the agent
+# 14268 - Jaeger receiver
+# 9411  - zipkin receiver
+# 55678 - OpenCensus receiver
+# 55679 - zpages extension
+# 13133 - health_check
+EXPOSE 9090 1777 8888 14268 9411 55678 55679 13133

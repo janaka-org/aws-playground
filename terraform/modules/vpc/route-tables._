@@ -1,0 +1,70 @@
+# private subnets have a route table with no route to an internet gateway
+# https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html
+
+
+# Make the default route table private. No internet gateway.
+
+resource "aws_default_route_table" "this" {
+  default_route_table_id = data.aws_vpc.this.main_route_table_id 
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main.id
+  }
+
+  tags = {
+    Tier = "private"
+    Name = "default-rt"
+  }
+}
+
+resource "aws_route_table_association" "private-1" {
+  subnet_id      = aws_subnet.private-1.id
+  route_table_id = aws_default_route_table.this.id
+}
+
+resource "aws_route_table_association" "private-2" {
+  subnet_id      = aws_subnet.private-2.id
+  route_table_id = aws_default_route_table.this.id
+}
+
+resource "aws_route_table_association" "private-3" {
+  subnet_id      = aws_subnet.private-3.id
+  route_table_id = aws_default_route_table.this.id
+}
+
+# route table for the publuc subnets
+
+resource "aws_route_table" "public" {
+  vpc_id = data.aws_vpc.this.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = var.internet_gateway_id
+  }
+
+  tags = {
+    Tier = "public"
+    Name = "public-rt"
+  }
+}
+
+resource "aws_route_table_association" "public-1" {
+  subnet_id      = aws_default_subnet.default_az1.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "public-2" {
+  subnet_id      = aws_default_subnet.default_az2.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "public-3" {
+  subnet_id      = aws_default_subnet.default_az3.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "public-4" {
+  subnet_id      = aws_default_subnet.default_az4.id
+  route_table_id = aws_route_table.public.id
+}

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <RootNamespace>hello_world_api</RootNamespace>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="AWS.Logger.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="AWSXRayRecorder" Version="2.8.0" />
+    <PackageReference Include="OpenTelemetry" Version="0.2.0-alpha.275" />
+    <PackageReference Include="OpenTelemetry.Adapter.AspNetCore" Version="0.2.0-alpha.275" />
+    <PackageReference Include="OpenTelemetry.Adapter.Dependencies" Version="0.2.0-alpha.275" />
+    <PackageReference Include="OpenTelemetry.Api" Version="0.2.0-alpha.275" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="0.2.0-alpha.275" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="0.2.0-alpha.275" />
+    <PackageReference Include="OpenTelemetry.Hosting" Version="0.2.0-alpha.220" />
+  </ItemGroup>
+</Project>

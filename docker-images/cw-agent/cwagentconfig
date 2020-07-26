@@ -1,0 +1,16 @@
+{ 
+  "logs": 
+  { 
+    "metrics_collected": 
+    {
+      "emf": {} 
+    }
+  }, 
+  "metrics": 
+  { 
+    "metrics_collected": 
+    { 
+      "statsd": {}
+    }
+  }
+}
