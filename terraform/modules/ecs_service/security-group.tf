@@ -8,8 +8,8 @@ resource "aws_security_group" "nsg_task" {
 resource "aws_security_group_rule" "nsg_task_egress_rule" {
   description = "Allows task to establish connections to all resources"
   type        = "egress"
-  from_port   = "0"
-  to_port     = "0"
+  from_port   = 0
+  to_port     = 0
   protocol    = "-1"
   cidr_blocks = ["0.0.0.0/0"]
 
